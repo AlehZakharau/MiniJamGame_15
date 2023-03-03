@@ -1,7 +1,12 @@
 function init(self)
+    --defos.set_cursor_visible(false)
     msg.post("/go#camera", "acquire_camera_focus")
     go.set("/go#camera", "orthographic_zoom", 2)
 
+	local pos = vmath.vector3(1080 * 0.5, 720 * 0.5, 0)
+    local camera_pos = go.get_position("/turret")
+    go.set_position(camera_pos - pos, "/go")
+    go.set_position(pos, "/aim")
 
 end
 
@@ -27,18 +32,6 @@ end
 function on_message(self, message_id, message, sender)
 	-- Add message-handling code here
 	-- Learn more: https://defold.com/manuals/message-passing/
-	-- Remove this function if not needed
-end
-
-function on_input(self, action_id, action)
-	-- Add input-handling code here. The game object this script is attached to
-	-- must have acquired input focus:
-	--
-	--    msg.post(".", "acquire_input_focus")
-	--
-	-- All mapped input bindings will be received. Mouse and touch input will
-	-- be received regardless of where on the screen it happened.
-	-- Learn more: https://defold.com/manuals/input/
 	-- Remove this function if not needed
 end
 
