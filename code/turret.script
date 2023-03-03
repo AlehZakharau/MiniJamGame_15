@@ -1,32 +1,12 @@
+local model = require("code/game_model")
+
 function init(self)
+    model.ammo = model.ammo_max
     msg.post(".", "acquire_input_focus")
 end
 
-function final(self)
-	-- Add finalization code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
-
-function update(self, dt)
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
-
-function fixed_update(self, dt)
-	-- This function is only called if 'Use Fixed Timestep' is enabled in the Physics section of game.project
-	-- Add update code here
-	-- Learn more: https://defold.com/manuals/script/
-	-- Remove this function if not needed
-end
-
-function on_message(self, message_id, message, sender)
-	-- Add message-handling code here
-	-- Learn more: https://defold.com/manuals/message-passing/
-	-- Remove this function if not needed
-end
-
+---rotate_turret
+---@param dir vector3 difference between two vectors
 local function rotate_turret(dir)
     local angle = math.atan2(-dir.x, dir.y)
     local a = vmath.quat_rotation_z(angle)
@@ -40,6 +20,28 @@ local function find_aim_pos(action)
     return aim_pos;
 end
 
+local function shoot()
+    if model.ammo > 0 and model.had_shoot == false then
+        print("shoot" .. model.ammo)
+        model.ammo = model.ammo - 1
+        model.had_shoot = true
+        timer.delay(model.shoot_delay, false, model.cooldown)
+    elseif model.ammo <= 0 then
+        print("no ammo reload")
+    else
+        print("to hot")
+    end
+end
+
+local function reload()
+    if model.had_reload == false then
+        model.had_reload = true
+        timer.delay(model.reload_time, false, model.reload)
+    else
+        print(" already reloading")
+    end
+end
+
 function on_input(self, action_id, action)
 
     if action.x and action.y then
@@ -50,12 +52,14 @@ function on_input(self, action_id, action)
         rotate_turret(aim_pos - pos)
     end
     if action_id == hash("touch") then
-        print("touch")
+        shoot()
     end
+    if action_id == hash("reload") then
+        reload()
+    end
+
 end
 
 function on_reload(self)
-	-- Add reload-handling code here
-	-- Learn more: https://defold.com/manuals/hot-reload/
-	-- Remove this function if not needed
+    model.ammo = model.ammo_max
 end

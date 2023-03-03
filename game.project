@@ -15,4 +15,5 @@ input_method = HiddenInputField
 title = Mini Jam Gam #15
 developer = Aleh Zakharau
 dependencies#0 = https://github.com/subsoap/defos/archive/refs/tags/v2.7.0.zip
+dependencies#1 = https://github.com/defold/lua-language-server/releases/download/v0.0.3/release.zip
 

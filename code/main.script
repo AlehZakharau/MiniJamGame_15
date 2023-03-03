@@ -6,7 +6,7 @@ function init(self)
 	local pos = vmath.vector3(1080 * 0.5, 720 * 0.5, 0)
     local camera_pos = go.get_position("/turret")
     go.set_position(camera_pos - pos, "/go")
-    go.set_position(pos, "/aim")
+	go.set_position(pos, "/aim")
 
 end
 

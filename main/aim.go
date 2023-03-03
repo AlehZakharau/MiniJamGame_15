@@ -14,8 +14,8 @@ embedded_components {
   "size_mode: SIZE_MODE_MANUAL\n"
   ""
   position {
-    x: 320.0
-    y: -156.0
+    x: 0.0
+    y: 0.0
     z: 0.0
   }
   rotation {
