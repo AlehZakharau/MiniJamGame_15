@@ -1,0 +1,33 @@
+local model = require("code/game_model")
+
+local score_text
+local reload_text
+
+function init(self)
+	score_text = gui.get_node("score_text")
+    reload_text = gui.get_node("reload_text")
+end
+
+local function ready()
+    gui.set_visible(reload_text, false)
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("add_score") then
+        gui.set_text(score_text, "Score: ".. message.score)
+    end
+    if message_id == hash("no_ammo") and model.had_reload == false then
+        gui.set_visible(reload_text, true)
+        gui.set_text(reload_text, "No ammo")
+        gui.set_color(reload_text, vmath.vector4(1, 0, 0, 1))
+    end
+    if message_id == hash("reloading") then
+        gui.set_text(reload_text, "Realoding")
+        gui.set_color(reload_text, vmath.vector4(1, 1, 0, 1))
+    end
+    if message_id == hash("reloaded") then
+        gui.set_text(reload_text, "Ready")
+        gui.set_color(reload_text, vmath.vector4(0, 1, 0, 1))
+        timer.delay(0.25, false, ready)
+    end
+end

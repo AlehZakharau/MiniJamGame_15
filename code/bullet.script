@@ -1,22 +1,22 @@
-local id
+local model = require("code/game_model")
+
 function init(self)
-	id = go.get_id()
+	self.id = go.get_id()
 end
 
-local function bullet_callback(self, url, property)
+local function bullet_callback(self)
 	print("on target")
-	go.delete(url)
+	go.delete(self.id)
 end
 
 local function hit_target(target)
-	go.delete(target)
-	go.cancel_animations(".")
-	go.delete(id)
+	model.increase_score()
+	model.delete_creature(target)
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("launch") then
-		go.animate(id, "position", go.PLAYBACK_ONCE_FORWARD, message.target_pos, go.EASING_INSINE, 0.35, 0, bullet_callback)
+		go.animate(self.id, "position", go.PLAYBACK_ONCE_FORWARD, message.target_pos, go.EASING_INSINE, 0.35, 0, bullet_callback)
 	end
 	if message_id == hash("trigger_response") then
 		if message.enter then

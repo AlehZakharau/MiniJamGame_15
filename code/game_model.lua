@@ -6,6 +6,11 @@
 
 local M = {}
 
+local creatures = {}
+
+M.game_active = false
+M.pause = false
+
 M.ammo = 10
 M.had_shoot = false
 M.ammo_max = 10
@@ -13,15 +18,70 @@ M.reload_time = 2
 M.had_reload = false
 M.shoot_delay = 0.2
 
+
+M.score = 0
+M.creature_spawn_delay = 1
+M.creature_amount = 3
+
 function M.reload()
     M.had_reload = false
     M.ammo = M.ammo_max
     print("reloaded")
+    msg.post("/hud#Hud", "reloaded")
+end
+
+function M.increase_score()
+    M.score = M.score + 1
+    msg.post("/hud#Hud", "add_score", {score = M.score})
+    if M.score % 10 == 0 then
+        M.creature_spawn_delay = M.creature_spawn_delay - 0.01
+    elseif M.score % 25 == 0 then
+        M.creature_amount = M.creature_amount + 1
+    end
 end
 
 function M.cooldown()
     M.had_shoot = false
     print("cooldown")
+end
+
+function M.add_creature(hash)
+    table.insert(creatures, hash)
+end
+
+function M.delete_creature(hash)
+    M.cancel_creature_animation(hash)
+    creatures[hash] = nil
+    go.delete(hash)
+end
+
+function M.animate_creature(id)
+    go.animate(id, "position.x", go.PLAYBACK_ONCE_FORWARD, 1080, go.EASING_LINEAR, 35)
+end
+
+function M.cancel_creature_animation(id)
+    go.cancel_animations(id, "position.x")
+end
+
+function M.iterate_throw_creatures()
+    for i, v in ipairs(creatures) do
+        print(i, v)
+    end
+end
+function M.pause_creatures()
+    for i, v in ipairs(creatures) do
+        if v ~= nil then
+            M.cancel_creature_animation(v)
+        end
+    end
+end
+
+function M.release_creatures()
+    for i, v in ipairs(creatures) do
+        if v ~= nil then
+            M.animate_creature(v)
+        end
+    end
 end
 
 return M

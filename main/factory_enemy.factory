@@ -1,0 +1,3 @@
+prototype: "/main/creature.go"
+load_dynamically: false
+dynamic_prototype: false

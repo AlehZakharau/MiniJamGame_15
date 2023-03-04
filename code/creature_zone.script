@@ -1,0 +1,13 @@
+local model = require("code/game_model")
+
+
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("trigger_response") then
+        if message.enter then
+            print("I am reach zone", message.other_id)
+            model.cancel_creature_animation(message.other_id)
+            model.delete_creature(message.other_id)
+        end
+    end
+end

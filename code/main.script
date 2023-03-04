@@ -1,9 +1,15 @@
+local model = require("code/game_model")
+local settings = require("code/settings")
+
 function init(self)
     --defos.set_cursor_visible(false)
+
+    local width, height = settings.get_display_size()
+    model.game_active = true
     msg.post("/go#camera", "acquire_camera_focus")
     go.set("/go#camera", "orthographic_zoom", 2)
 
-	local pos = vmath.vector3(1080 * 0.5, 720 * 0.5, 0)
+	local pos = vmath.vector3(width * 0.5, height * 0.5, 0)
     local camera_pos = go.get_position("/turret")
     go.set_position(camera_pos - pos, "/go")
 	go.set_position(pos, "/aim")
