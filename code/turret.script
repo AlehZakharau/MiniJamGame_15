@@ -1,16 +1,18 @@
 local model = require("code/game_model")
+local turret_pos
 
 function init(self)
     model.ammo = model.ammo_max
+    turret_pos = go.get_position()
     msg.post(".", "acquire_input_focus")
+
 end
 
 ---rotate_turret
 ---@param dir vector3 difference between two vectors
-local function rotate_turret(dir)
+local function find_aim_angle(dir)
     local angle = math.atan2(-dir.x, dir.y)
-    local a = vmath.quat_rotation_z(angle)
-    go.set(".", "rotation", a)
+    return vmath.quat_rotation_z(angle)
 end
 
 local function find_aim_pos(action)
@@ -20,18 +22,21 @@ local function find_aim_pos(action)
     return aim_pos;
 end
 
-local function shoot()
+local function shoot(angle, target_pos)
     if model.ammo > 0 and model.had_shoot == false then
         print("shoot" .. model.ammo)
         model.ammo = model.ammo - 1
         model.had_shoot = true
         timer.delay(model.shoot_delay, false, model.cooldown)
+        local id = factory.create("/bullet_factory#factory_bullet", turret_pos, angle)
+        msg.post(id, "launch", {target_pos = target_pos})
     elseif model.ammo <= 0 then
         print("no ammo reload")
     else
         print("to hot")
     end
 end
+
 
 local function reload()
     if model.had_reload == false then
@@ -43,16 +48,17 @@ local function reload()
 end
 
 function on_input(self, action_id, action)
-
+    local aim_pos = vmath.vector3(0, 0, 0)
+    local angle
     if action.x and action.y then
-        local aim_pos = find_aim_pos(action)
+        aim_pos = find_aim_pos(action)
         go.set_position(aim_pos, "/aim")
 
-        local pos = go.get_position()
-        rotate_turret(aim_pos - pos)
+        angle = find_aim_angle(aim_pos - turret_pos)
+        go.set(".", "rotation", angle)
     end
     if action_id == hash("touch") then
-        shoot()
+        shoot(angle, aim_pos)
     end
     if action_id == hash("reload") then
         reload()

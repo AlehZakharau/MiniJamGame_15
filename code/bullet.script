@@ -1,0 +1,28 @@
+local id
+function init(self)
+	id = go.get_id()
+end
+
+local function bullet_callback(self, url, property)
+	print("on target")
+	go.delete(url)
+end
+
+local function hit_target(target)
+	go.delete(target)
+	go.cancel_animations(".")
+	go.delete(id)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("launch") then
+		go.animate(id, "position", go.PLAYBACK_ONCE_FORWARD, message.target_pos, go.EASING_INSINE, 0.35, 0, bullet_callback)
+	end
+	if message_id == hash("trigger_response") then
+		if message.enter then
+			-- take action for entry
+			print("I am now inside", message.other_id)
+			hit_target(message.other_id)
+		end
+	end
+end
